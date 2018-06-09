@@ -136,9 +136,9 @@ async def delete_tags():
         project = re.sub(regexp, '', i['location'])
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{GBIR_CLEAN_URL}/extra_path/?clean-token={GBIR_CLEAN_TOKEN}&path={project}",
+                async with session.get(f"{GBIR_CLEAN_URL}/extra_path?clean-token={GBIR_CLEAN_TOKEN}&path={project}",
                                        timeout=GBIR_DELETE_TIMEOUT) as response:
-                    text = response.read()
+                    text = await response.read()
                     print(f"{project} - {text}")
         except Exception as e:
             print(f"Error {project} - {e}")
