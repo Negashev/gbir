@@ -140,7 +140,7 @@ async def delete_tags():
                                        timeout=GBIR_DELETE_TIMEOUT) as response:
                     text = await response.read()
                     print(f"{project} - {text}")
-                    TAGS.delete(i)
+                    TAGS.remove(i)
         except Exception as e:
             print(f"Error {project} - {e}")
 
