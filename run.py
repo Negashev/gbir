@@ -46,8 +46,12 @@ TAGS = []
 async def get_json(url):
     global GBIR_TOKEN
     async with aiohttp.ClientSession(headers={"PRIVATE-TOKEN": GBIR_TOKEN}) as session:
-        async with session.get(url, timeout=GBIR_GET_TIMEOUT) as response:
-            return await response.json()
+        try:
+            async with session.get(url, timeout=GBIR_GET_TIMEOUT) as response:
+                return await response.json()
+        except asyncio.TimeoutError:
+            print('get_json exception!')
+            return None
 
 
 async def parallel_client_session(method, data):
@@ -67,8 +71,12 @@ async def get_projects():
 
 
 async def get_registry_in_project(path_with_namespace, session):
-    async with session.get(f"{GBIR_URL}/{path_with_namespace}/container_registry.json", timeout=GBIR_GET_TIMEOUT) as response:
-        return await response.json()
+    try:
+        async with session.get(f"{GBIR_URL}/{path_with_namespace}/container_registry.json", timeout=GBIR_GET_TIMEOUT) as response:
+            return await response.json()
+    except asyncio.TimeoutError:
+        print('get_registry_in_project exception!')
+        return []
 
 
 async def get_registry():
