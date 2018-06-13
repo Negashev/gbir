@@ -36,6 +36,7 @@ GBIR_FREEZE_TIME = int(os.getenv('GBIR_FREEZE_TIME', 604800))
 GBIR_DELETE_SIZE = int(os.getenv('GBIR_DELETE_SIZE', 10))
 GBIR_DELETE_TIMEOUT = int(os.getenv('GBIR_DELETE_TIMEOUT', 600))
 GBIR_REGISTRY_URL = os.getenv('GBIR_REGISTRY_URL', '')
+GBIR_GET_TIMEOUT = int(os.getenv('GBIR_GET_TIMEOUT', 60))
 
 PROJECTS = []
 REGISTRY = []
@@ -45,7 +46,7 @@ TAGS = []
 async def get_json(url):
     global GBIR_TOKEN
     async with aiohttp.ClientSession(headers={"PRIVATE-TOKEN": GBIR_TOKEN}) as session:
-        async with session.get(url) as response:
+        async with session.get(url, timeout=GBIR_GET_TIMEOUT) as response:
             return await response.json()
 
 
@@ -66,7 +67,7 @@ async def get_projects():
 
 
 async def get_registry_in_project(path_with_namespace, session):
-    async with session.get(f"{GBIR_URL}/{path_with_namespace}/container_registry.json") as response:
+    async with session.get(f"{GBIR_URL}/{path_with_namespace}/container_registry.json", timeout=GBIR_GET_TIMEOUT) as response:
         return await response.json()
 
 
