@@ -175,8 +175,16 @@ async def connect_scheduler():
 
 
 async def health_check(request):
-    global TAGS
-    return request.Response(json=TAGS, mime_type="application/json")
+    global QUEUE_PROJECTS
+    global QUEUE_REGISTRY
+    global QUEUE_TAGS
+    return request.Response(
+        json={
+            "QUEUE_PROJECTS": QUEUE_PROJECTS,
+            "QUEUE_REGISTRY": QUEUE_REGISTRY,
+            "QUEUE_TAGS": QUEUE_TAGS
+        },
+        mime_type="application/json")
 
 
 app = Application()
