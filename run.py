@@ -10,6 +10,7 @@ from dateutil import parser
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from japronto import Application
 
+GBIR_RELEASE_BY_SERVICE = bool(int(os.getenv('GBIR_RELEASE_BY_SERVICE', 0)))
 GBIR_TOKEN = os.getenv('GBIR_TOKEN', None)
 if GBIR_TOKEN is None:
     print(f"Please set GBIR_TOKEN")
@@ -114,12 +115,28 @@ async def find_all_tags(tags_path):
 
 async def filter_tag(data):
     this_time = time.time()
-    if data['name'] not in ['develop', 'master', 'latest'] and not data['name'].startswith('release'):
+    if GBIR_RELEASE_BY_SERVICE and data['name'].startswith('release'):
+        service_with_tag = data['location'].split('/')[-1:]
+        service, tag = service_with_tag[0].split(":")
+        if tag.replace('release-', '').startswith(service):
+            print(f"+ {service}, {tag}")
+            return None
+
+        print(f"------> {service}, {tag}")
+
         if data['created_at'] is None:
             return None
         dt = parser.parse(data['created_at'])
         if dt.timestamp() < this_time - GBIR_FREEZE_TIME:
             return data
+    elif data['name'] not in ['develop', 'master', 'latest'] and not data['name'].startswith('release'):
+        if data['created_at'] is None:
+            return None
+        dt = parser.parse(data['created_at'])
+        if dt.timestamp() < this_time - GBIR_FREEZE_TIME:
+            return data
+    else:
+        return None
 
 
 async def get_tags():
